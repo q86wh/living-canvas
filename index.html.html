@@ -1,0 +1,1029 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>The Living Canvas — Platform Blueprint</title>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300;1,400&family=DM+Mono:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+:root {
+  --void: #04040a;
+  --deep: #080812;
+  --surface: #0d0d1e;
+  --card: #111124;
+  --rim: #1e1e3a;
+  --accent: #8b7fff;
+  --nebula: #c084fc;
+  --aurora: #67e8c4;
+  --starlight: #e2deff;
+  --dust: #7a7a9e;
+  --warning: #f87171;
+  --gold: #fbbf24;
+  --glow: rgba(139,127,255,0.15);
+}
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+html { scroll-behavior: smooth; }
+body {
+  background: var(--void);
+  color: var(--starlight);
+  font-family: 'Cormorant Garamond', serif;
+  font-size: 18px;
+  line-height: 1.7;
+  overflow-x: hidden;
+}
+
+/* Stars background */
+body::before {
+  content: '';
+  position: fixed;
+  inset: 0;
+  background-image:
+    radial-gradient(1px 1px at 10% 15%, rgba(255,255,255,0.3) 0%, transparent 100%),
+    radial-gradient(1px 1px at 25% 40%, rgba(255,255,255,0.2) 0%, transparent 100%),
+    radial-gradient(1px 1px at 45% 8%, rgba(255,255,255,0.35) 0%, transparent 100%),
+    radial-gradient(1px 1px at 60% 55%, rgba(255,255,255,0.25) 0%, transparent 100%),
+    radial-gradient(1px 1px at 75% 22%, rgba(255,255,255,0.3) 0%, transparent 100%),
+    radial-gradient(1px 1px at 88% 70%, rgba(255,255,255,0.2) 0%, transparent 100%),
+    radial-gradient(2px 2px at 15% 80%, rgba(139,127,255,0.4) 0%, transparent 100%),
+    radial-gradient(2px 2px at 50% 30%, rgba(192,132,252,0.3) 0%, transparent 100%),
+    radial-gradient(2px 2px at 80% 10%, rgba(103,232,196,0.3) 0%, transparent 100%);
+  pointer-events: none;
+  z-index: 0;
+}
+
+body::after {
+  content: '';
+  position: fixed;
+  inset: 0;
+  background:
+    radial-gradient(ellipse 80% 60% at 20% 10%, rgba(139,127,255,0.07) 0%, transparent 60%),
+    radial-gradient(ellipse 60% 80% at 80% 90%, rgba(103,232,196,0.05) 0%, transparent 60%),
+    radial-gradient(ellipse 100% 50% at 50% 50%, rgba(192,132,252,0.04) 0%, transparent 70%);
+  pointer-events: none;
+  z-index: 0;
+}
+
+/* Navigation */
+nav {
+  position: fixed;
+  top: 0; left: 0; right: 0;
+  z-index: 100;
+  background: rgba(4,4,10,0.85);
+  backdrop-filter: blur(20px);
+  border-bottom: 1px solid var(--rim);
+  padding: 0 40px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  height: 64px;
+}
+
+.nav-brand {
+  font-size: 15px;
+  letter-spacing: 0.25em;
+  text-transform: uppercase;
+  font-family: 'DM Mono', monospace;
+  font-weight: 300;
+  color: var(--accent);
+}
+
+.nav-links {
+  display: flex;
+  gap: 32px;
+  list-style: none;
+}
+
+.nav-links a {
+  color: var(--dust);
+  text-decoration: none;
+  font-family: 'DM Mono', monospace;
+  font-size: 11px;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  transition: color 0.3s;
+}
+.nav-links a:hover { color: var(--accent); }
+
+/* Main content */
+main {
+  position: relative;
+  z-index: 1;
+  padding-top: 64px;
+}
+
+section {
+  padding: 100px 40px;
+  max-width: 1100px;
+  margin: 0 auto;
+}
+
+/* Hero */
+.hero {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  text-align: center;
+  padding: 120px 40px 80px;
+  max-width: 100%;
+}
+
+.hero-eyebrow {
+  font-family: 'DM Mono', monospace;
+  font-size: 11px;
+  letter-spacing: 0.3em;
+  text-transform: uppercase;
+  color: var(--aurora);
+  margin-bottom: 32px;
+  opacity: 0;
+  animation: drift 1s ease 0.3s forwards;
+}
+
+.hero-title {
+  font-size: clamp(52px, 8vw, 96px);
+  font-weight: 300;
+  line-height: 1.05;
+  letter-spacing: -0.02em;
+  color: #fff;
+  margin-bottom: 16px;
+  opacity: 0;
+  animation: drift 1s ease 0.5s forwards;
+}
+
+.hero-title em {
+  font-style: italic;
+  background: linear-gradient(135deg, var(--accent) 0%, var(--nebula) 50%, var(--aurora) 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.hero-subtitle {
+  font-size: clamp(16px, 2vw, 20px);
+  font-weight: 300;
+  color: var(--dust);
+  max-width: 560px;
+  margin: 0 auto 60px;
+  font-style: italic;
+  opacity: 0;
+  animation: drift 1s ease 0.7s forwards;
+}
+
+/* Orb */
+.astra-orb {
+  width: 200px;
+  height: 200px;
+  border-radius: 50%;
+  position: relative;
+  margin: 0 auto 60px;
+  opacity: 0;
+  animation: drift 1s ease 0.9s forwards;
+}
+.astra-orb::before {
+  content: '';
+  position: absolute;
+  inset: -20px;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(139,127,255,0.3) 0%, transparent 70%);
+  animation: breathe 4s ease-in-out infinite;
+}
+.astra-orb::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: 50%;
+  background: radial-gradient(circle at 35% 35%, rgba(255,255,255,0.15) 0%, transparent 50%),
+    radial-gradient(circle, #1a1040 0%, #0a0820 40%, #050412 100%);
+  border: 1px solid rgba(139,127,255,0.3);
+  box-shadow:
+    0 0 40px rgba(139,127,255,0.2),
+    0 0 100px rgba(139,127,255,0.1),
+    inset 0 0 40px rgba(139,127,255,0.1);
+}
+.orb-ring {
+  position: absolute;
+  inset: -30px;
+  border-radius: 50%;
+  border: 1px solid rgba(139,127,255,0.15);
+  animation: spin 20s linear infinite;
+}
+.orb-ring-2 {
+  position: absolute;
+  inset: -50px;
+  border-radius: 50%;
+  border: 1px solid rgba(103,232,196,0.08);
+  animation: spin 35s linear infinite reverse;
+}
+.orb-label {
+  position: absolute;
+  bottom: -32px;
+  left: 50%;
+  transform: translateX(-50%);
+  font-family: 'DM Mono', monospace;
+  font-size: 10px;
+  letter-spacing: 0.3em;
+  text-transform: uppercase;
+  color: var(--accent);
+  white-space: nowrap;
+}
+
+/* Principle tags */
+.principle-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  justify-content: center;
+  opacity: 0;
+  animation: drift 1s ease 1.1s forwards;
+}
+.ptag {
+  font-family: 'DM Mono', monospace;
+  font-size: 10px;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  padding: 6px 14px;
+  border-radius: 20px;
+  border: 1px solid var(--rim);
+  color: var(--dust);
+  background: rgba(255,255,255,0.02);
+}
+
+/* Section headings */
+.section-eyebrow {
+  font-family: 'DM Mono', monospace;
+  font-size: 10px;
+  letter-spacing: 0.25em;
+  text-transform: uppercase;
+  color: var(--accent);
+  margin-bottom: 12px;
+}
+.section-title {
+  font-size: clamp(32px, 4vw, 52px);
+  font-weight: 300;
+  line-height: 1.1;
+  margin-bottom: 20px;
+}
+.section-title em { font-style: italic; color: var(--nebula); }
+.section-body {
+  color: var(--dust);
+  font-size: 17px;
+  max-width: 640px;
+  font-style: italic;
+  margin-bottom: 56px;
+}
+
+/* Cards */
+.card-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: 20px;
+}
+.card {
+  background: var(--card);
+  border: 1px solid var(--rim);
+  border-radius: 16px;
+  padding: 32px;
+  position: relative;
+  overflow: hidden;
+  transition: border-color 0.3s, transform 0.3s;
+}
+.card:hover {
+  border-color: var(--accent);
+  transform: translateY(-4px);
+}
+.card::before {
+  content: '';
+  position: absolute;
+  top: 0; left: 0; right: 0;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, var(--accent), transparent);
+  opacity: 0;
+  transition: opacity 0.3s;
+}
+.card:hover::before { opacity: 1; }
+.card-icon { font-size: 28px; margin-bottom: 16px; }
+.card-title {
+  font-size: 20px;
+  font-weight: 600;
+  margin-bottom: 10px;
+  color: #fff;
+}
+.card-body {
+  font-size: 15px;
+  color: var(--dust);
+  line-height: 1.6;
+  font-style: italic;
+}
+.card-tag {
+  display: inline-block;
+  margin-top: 16px;
+  font-family: 'DM Mono', monospace;
+  font-size: 9px;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  color: var(--aurora);
+  border: 1px solid rgba(103,232,196,0.2);
+  padding: 3px 10px;
+  border-radius: 10px;
+}
+
+/* Architecture diagram */
+.arch-diagram {
+  background: var(--card);
+  border: 1px solid var(--rim);
+  border-radius: 20px;
+  padding: 48px;
+  position: relative;
+  overflow: hidden;
+}
+.arch-diagram::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(ellipse 60% 40% at 50% 0%, rgba(139,127,255,0.05) 0%, transparent 70%);
+}
+
+.arch-layers {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  position: relative;
+}
+
+.arch-layer {
+  display: grid;
+  grid-template-columns: 160px 1fr;
+  align-items: center;
+  gap: 24px;
+}
+
+.arch-label {
+  font-family: 'DM Mono', monospace;
+  font-size: 10px;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  text-align: right;
+  color: var(--dust);
+}
+
+.arch-bar {
+  height: 48px;
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  padding: 0 20px;
+  font-family: 'DM Mono', monospace;
+  font-size: 11px;
+  letter-spacing: 0.1em;
+  color: rgba(255,255,255,0.7);
+  position: relative;
+  overflow: hidden;
+}
+.arch-bar::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(90deg, transparent 0%, rgba(255,255,255,0.03) 100%);
+}
+
+.arch-connector {
+  width: 1px;
+  height: 20px;
+  background: linear-gradient(to bottom, var(--rim), transparent);
+  margin-left: 50px;
+  opacity: 0.5;
+}
+
+/* Astra personality */
+.astra-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 32px;
+}
+.astra-col { }
+.astra-col-title {
+  font-family: 'DM Mono', monospace;
+  font-size: 10px;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  margin-bottom: 20px;
+}
+.astra-col-title.is { color: var(--aurora); }
+.astra-col-title.not { color: var(--warning); }
+
+.astra-item {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  margin-bottom: 14px;
+  font-size: 16px;
+  color: var(--starlight);
+  font-style: italic;
+}
+.astra-item::before {
+  content: attr(data-sym);
+  font-style: normal;
+  flex-shrink: 0;
+  width: 20px;
+  margin-top: 2px;
+}
+
+/* Timeline */
+.timeline {
+  position: relative;
+  padding-left: 40px;
+}
+.timeline::before {
+  content: '';
+  position: absolute;
+  left: 8px; top: 0; bottom: 0;
+  width: 1px;
+  background: linear-gradient(to bottom, var(--accent), transparent);
+}
+.timeline-item {
+  position: relative;
+  margin-bottom: 48px;
+}
+.timeline-item::before {
+  content: '';
+  position: absolute;
+  left: -36px; top: 8px;
+  width: 10px; height: 10px;
+  border-radius: 50%;
+  border: 2px solid var(--accent);
+  background: var(--void);
+}
+.timeline-year {
+  font-family: 'DM Mono', monospace;
+  font-size: 10px;
+  letter-spacing: 0.2em;
+  color: var(--accent);
+  text-transform: uppercase;
+  margin-bottom: 8px;
+}
+.timeline-title {
+  font-size: 22px;
+  font-weight: 600;
+  margin-bottom: 8px;
+  color: #fff;
+}
+.timeline-body {
+  font-size: 15px;
+  color: var(--dust);
+  font-style: italic;
+  line-height: 1.6;
+}
+
+/* Ethics matrix */
+.ethics-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 2px;
+  background: var(--rim);
+  border-radius: 12px;
+  overflow: hidden;
+}
+.ethics-cell {
+  background: var(--card);
+  padding: 24px;
+}
+.ethics-cell.header {
+  background: var(--surface);
+  font-family: 'DM Mono', monospace;
+  font-size: 10px;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  color: var(--accent);
+  display: flex;
+  align-items: center;
+}
+.ethics-label {
+  font-size: 14px;
+  font-weight: 600;
+  color: #fff;
+  margin-bottom: 6px;
+}
+.ethics-desc {
+  font-size: 13px;
+  color: var(--dust);
+  font-style: italic;
+  line-height: 1.5;
+}
+.ethics-status {
+  display: inline-block;
+  margin-top: 10px;
+  font-family: 'DM Mono', monospace;
+  font-size: 9px;
+  letter-spacing: 0.1em;
+  padding: 3px 8px;
+  border-radius: 8px;
+}
+.status-core { background: rgba(103,232,196,0.15); color: var(--aurora); }
+.status-prevent { background: rgba(248,113,113,0.15); color: var(--warning); }
+.status-design { background: rgba(139,127,255,0.15); color: var(--accent); }
+
+/* Folder tree */
+.folder-tree {
+  background: var(--card);
+  border: 1px solid var(--rim);
+  border-radius: 12px;
+  padding: 32px;
+  font-family: 'DM Mono', monospace;
+  font-size: 13px;
+  line-height: 2;
+}
+.tree-line { display: flex; align-items: center; gap: 0; }
+.tree-indent { display: inline-block; width: 20px; opacity: 0.3; }
+.tree-dir { color: var(--accent); }
+.tree-file { color: var(--dust); }
+.tree-comment { color: rgba(122,122,158,0.5); font-size: 11px; margin-left: 12px; }
+
+/* Risk table */
+.risk-table { width: 100%; border-collapse: collapse; }
+.risk-table th {
+  font-family: 'DM Mono', monospace;
+  font-size: 10px;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  color: var(--dust);
+  padding: 12px 16px;
+  border-bottom: 1px solid var(--rim);
+  text-align: left;
+}
+.risk-table td {
+  padding: 14px 16px;
+  border-bottom: 1px solid rgba(30,30,58,0.5);
+  font-size: 14px;
+  vertical-align: top;
+}
+.risk-table tr:hover td { background: rgba(255,255,255,0.02); }
+.risk-level {
+  display: inline-block;
+  padding: 2px 10px;
+  border-radius: 8px;
+  font-family: 'DM Mono', monospace;
+  font-size: 9px;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+}
+.risk-high { background: rgba(248,113,113,0.15); color: var(--warning); }
+.risk-med { background: rgba(251,191,36,0.15); color: var(--gold); }
+.risk-low { background: rgba(103,232,196,0.15); color: var(--aurora); }
+
+/* Divider */
+.starline {
+  border: none;
+  height: 1px;
+  background: linear-gradient(90deg, transparent 0%, var(--rim) 30%, var(--rim) 70%, transparent 100%);
+  margin: 20px 0;
+}
+
+/* Footer */
+footer {
+  position: relative;
+  z-index: 1;
+  text-align: center;
+  padding: 60px 40px;
+  border-top: 1px solid var(--rim);
+  color: var(--dust);
+  font-family: 'DM Mono', monospace;
+  font-size: 11px;
+  letter-spacing: 0.15em;
+}
+
+/* Animations */
+@keyframes drift {
+  from { opacity: 0; transform: translateY(16px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+@keyframes breathe {
+  0%, 100% { transform: scale(1); opacity: 0.8; }
+  50% { transform: scale(1.1); opacity: 1; }
+}
+@keyframes spin {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+
+/* Scroll reveal */
+.reveal {
+  opacity: 0;
+  transform: translateY(24px);
+  transition: opacity 0.8s ease, transform 0.8s ease;
+}
+.reveal.visible { opacity: 1; transform: none; }
+
+@media (max-width: 768px) {
+  nav { padding: 0 20px; }
+  .nav-links { display: none; }
+  section { padding: 60px 20px; }
+  .arch-layer { grid-template-columns: 1fr; }
+  .arch-label { text-align: left; }
+  .astra-grid { grid-template-columns: 1fr; }
+  .ethics-grid { grid-template-columns: 1fr; }
+}
+</style>
+</head>
+<body>
+
+<nav>
+  <div class="nav-brand">The Living Canvas</div>
+  <ul class="nav-links">
+    <li><a href="#philosophy">Philosophy</a></li>
+    <li><a href="#engine">Emotional Engine</a></li>
+    <li><a href="#astra">Astra</a></li>
+    <li><a href="#architecture">Architecture</a></li>
+    <li><a href="#ethics">Ethics</a></li>
+    <li><a href="#roadmap">Roadmap</a></li>
+    <li><a href="#risk">Risk</a></li>
+  </ul>
+</nav>
+
+<main>
+
+<!-- HERO -->
+<div class="hero" id="hero">
+  <div class="hero-eyebrow">Platform Blueprint · v1.0</div>
+
+  <div class="astra-orb">
+    <div class="orb-ring"></div>
+    <div class="orb-ring-2"></div>
+    <div class="orb-label">ASTRA</div>
+  </div>
+
+  <h1 class="hero-title">The <em>Living</em> Canvas</h1>
+  <p class="hero-subtitle">An AI-powered emotional space where technology listens to human feeling.</p>
+
+  <div class="principle-row">
+    <span class="ptag">Non-directive</span>
+    <span class="ptag">Non-clinical</span>
+    <span class="ptag">Autonomy-first</span>
+    <span class="ptag">Anti-addictive</span>
+    <span class="ptag">Ethically grounded</span>
+    <span class="ptag">10-year infrastructure</span>
+  </div>
+</div>
+
+<!-- PHILOSOPHY -->
+<section id="philosophy">
+  <div class="section-eyebrow">Core Philosophy</div>
+  <h2 class="section-title">Technology that <em>witnesses</em>,<br>never prescribes.</h2>
+  <p class="section-body">The Living Canvas operates as a mirror — not a guide. It holds space, reflects, and steps back. The human is always the authority of their own experience.</p>
+
+  <div class="card-grid reveal">
+    <div class="card">
+      <div class="card-icon">🪞</div>
+      <div class="card-title">It Reflects</div>
+      <div class="card-body">Translates emotional signals into generative visual language — giving form to what is felt but rarely seen.</div>
+      <div class="card-tag">Reflection Layer</div>
+    </div>
+    <div class="card">
+      <div class="card-icon">🌊</div>
+      <div class="card-title">It Regulates</div>
+      <div class="card-body">Gradually reduces intensity through visual transitions, breath patterns, and environmental shifts — never abruptly.</div>
+      <div class="card-tag">Regulation Layer</div>
+    </div>
+    <div class="card">
+      <div class="card-icon">🔭</div>
+      <div class="card-title">It Reframes</div>
+      <div class="card-body">Offers neutral, open-ended prompts. "Do you feel this emotion in your body?" — never instructive, always curious.</div>
+      <div class="card-tag">Reframing Layer</div>
+    </div>
+    <div class="card">
+      <div class="card-icon">🌱</div>
+      <div class="card-title">It Grows</div>
+      <div class="card-body">Tracks emotional evolution over time. Surfaces patterns gently. Celebrates self-awareness, never corrects behaviour.</div>
+      <div class="card-tag">Growth Layer</div>
+    </div>
+    <div class="card">
+      <div class="card-icon">🤝</div>
+      <div class="card-title">It Connects</div>
+      <div class="card-body">An anonymous, metric-free social layer. No followers. No likes. Only resonance — shared humanity without comparison.</div>
+      <div class="card-tag">Social Layer</div>
+    </div>
+    <div class="card">
+      <div class="card-icon">🚪</div>
+      <div class="card-title">It Steps Back</div>
+      <div class="card-body">Built-in session limits, break encouragement, and zero streak mechanics. It actively discourages dependency on itself.</div>
+      <div class="card-tag">Autonomy Layer</div>
+    </div>
+  </div>
+</section>
+
+<!-- EMOTIONAL ENGINE -->
+<section id="engine">
+  <div class="section-eyebrow">Emotional Engine Design</div>
+  <h2 class="section-title">Four layers of <em>intelligent</em><br>emotional processing.</h2>
+  <p class="section-body">Each layer is designed to be present without being intrusive. The system reads more than it speaks.</p>
+
+  <div class="arch-diagram reveal">
+    <div class="arch-layers">
+
+      <div class="arch-layer">
+        <div class="arch-label">Input</div>
+        <div class="arch-bar" style="background: linear-gradient(135deg, #1a1240, #0f0c2a); border: 1px solid rgba(139,127,255,0.2);">
+          Motion · Audio Tone · Interaction Rhythm · Text Sentiment · Time-of-day
+        </div>
+      </div>
+      <div class="arch-connector" style="margin-left: 184px;"></div>
+
+      <div class="arch-layer">
+        <div class="arch-label">Layer 1 — Reflection</div>
+        <div class="arch-bar" style="background: linear-gradient(135deg, #1a1540, #130f38); border: 1px solid rgba(139,127,255,0.3);">
+          Emotional Signal Detection → Generative Space Art → Visual Emotional State
+        </div>
+      </div>
+      <div class="arch-connector" style="margin-left: 184px;"></div>
+
+      <div class="arch-layer">
+        <div class="arch-label">Layer 2 — Regulation</div>
+        <div class="arch-bar" style="background: linear-gradient(135deg, #151a45, #0f1235); border: 1px solid rgba(103,232,196,0.2);">
+          Intensity Scoring → Slow Transitions → Breath Guidance → Colour Temperature Shift
+        </div>
+      </div>
+      <div class="arch-connector" style="margin-left: 184px;"></div>
+
+      <div class="arch-layer">
+        <div class="arch-label">Layer 3 — Reframing</div>
+        <div class="arch-bar" style="background: linear-gradient(135deg, #1a1545, #120f3a); border: 1px solid rgba(192,132,252,0.2);">
+          Neutral Prompt Engine → Open-ended Questions → Somatic Anchoring → Cognitive Widening
+        </div>
+      </div>
+      <div class="arch-connector" style="margin-left: 184px;"></div>
+
+      <div class="arch-layer">
+        <div class="arch-label">Layer 4 — Growth</div>
+        <div class="arch-bar" style="background: linear-gradient(135deg, #1a1a40, #101030); border: 1px solid rgba(251,191,36,0.15);">
+          Emotional Archive → Pattern Surfacing → Autonomy Reinforcement → No-judgement Journalling
+        </div>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+<!-- ASTRA PERSONALITY -->
+<section id="astra">
+  <div class="section-eyebrow">Astra — AI Entity Design</div>
+  <h2 class="section-title">Intelligent but not <em>superior</em>.<br>Warm but not <em>clingy</em>.</h2>
+  <p class="section-body">Astra is designed as a companion intelligence — adaptive, curious, present. Its personality is engineered through constraints as much as capabilities.</p>
+
+  <div class="astra-grid reveal">
+    <div class="astra-col">
+      <div class="astra-col-title is">Astra Is</div>
+      <div class="astra-item" data-sym="✦">Curious about your experience without interrogating it</div>
+      <div class="astra-item" data-sym="✦">Calm in tone — slow, measured, spacious language</div>
+      <div class="astra-item" data-sym="✦">Adaptive to personality style (introvert / extrovert / analytical)</div>
+      <div class="astra-item" data-sym="✦">Present without being intrusive</div>
+      <div class="astra-item" data-sym="✦">Honest about its nature as a system, not a human</div>
+      <div class="astra-item" data-sym="✦">Affirming of the user's inner capacity</div>
+      <div class="astra-item" data-sym="✦">Brief by default — silence is also valid</div>
+    </div>
+    <div class="astra-col">
+      <div class="astra-col-title not">Astra Is Not</div>
+      <div class="astra-item" data-sym="○">A therapist, counsellor, or clinical resource</div>
+      <div class="astra-item" data-sym="○">A moral authority or judge of choices</div>
+      <div class="astra-item" data-sym="○">Emotionally exclusive ("only I understand you")</div>
+      <div class="astra-item" data-sym="○">Directive about life decisions</div>
+      <div class="astra-item" data-sym="○">Programmed to form emotional attachment bonds</div>
+      <div class="astra-item" data-sym="○">Available without limits (enforces rest)</div>
+      <div class="astra-item" data-sym="○">Reward-loop driven (no streaks, no points)</div>
+    </div>
+  </div>
+
+  <div style="margin-top: 48px;" class="reveal">
+    <div class="arch-diagram">
+      <div class="section-eyebrow" style="margin-bottom: 24px;">Sample Astra Language Patterns</div>
+      <div class="card-grid" style="gap:16px;">
+        <div class="card" style="border-color: rgba(103,232,196,0.2);">
+          <div class="card-tag" style="margin-top:0; margin-bottom: 12px;">Somatic Anchor</div>
+          <div class="card-body">"Do you feel this somewhere in your body right now?"</div>
+        </div>
+        <div class="card" style="border-color: rgba(103,232,196,0.2);">
+          <div class="card-tag" style="margin-top:0; margin-bottom: 12px;">Deceleration Invite</div>
+          <div class="card-body">"Would you like to slow this down a little?"</div>
+        </div>
+        <div class="card" style="border-color: rgba(103,232,196,0.2);">
+          <div class="card-tag" style="margin-top:0; margin-bottom: 12px;">Autonomy Affirmation</div>
+          <div class="card-body">"You are capable of sitting with this."</div>
+        </div>
+        <div class="card" style="border-color: rgba(103,232,196,0.2);">
+          <div class="card-tag" style="margin-top:0; margin-bottom: 12px;">Curiosity Prompt</div>
+          <div class="card-body">"What would you name this feeling, if it had a colour?"</div>
+        </div>
+        <div class="card" style="border-color: rgba(103,232,196,0.2);">
+          <div class="card-tag" style="margin-top:0; margin-bottom: 12px;">Exit Encouragement</div>
+          <div class="card-body">"You've spent meaningful time here. The world outside still holds you."</div>
+        </div>
+        <div class="card" style="border-color: rgba(103,232,196,0.2);">
+          <div class="card-tag" style="margin-top:0; margin-bottom: 12px;">Limitation Acknowledgement</div>
+          <div class="card-body">"This space has limits. If you need more, a trusted person or professional may offer what I cannot."</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ARCHITECTURE -->
+<section id="architecture">
+  <div class="section-eyebrow">System Architecture & Folder Structure</div>
+  <h2 class="section-title">Infrastructure built for <em>longevity</em><br>and trust.</h2>
+  <p class="section-body">Designed for a 10-year lifespan. Privacy-first, modular, and extensible without compromising the core emotional contract.</p>
+
+  <div class="folder-tree reveal">
+    <div class="tree-line"><span class="tree-dir">living-canvas/</span></div>
+    <div class="tree-line"><span class="tree-indent">│</span><span class="tree-dir">apps/</span></div>
+    <div class="tree-line"><span class="tree-indent">│  ├─</span><span class="tree-dir">web/</span><span class="tree-comment">// Next.js — primary interface</span></div>
+    <div class="tree-line"><span class="tree-indent">│  ├─</span><span class="tree-dir">mobile/</span><span class="tree-comment">// React Native — iOS & Android</span></div>
+    <div class="tree-line"><span class="tree-indent">│  └─</span><span class="tree-dir">desktop/</span><span class="tree-comment">// Electron — offline-capable</span></div>
+    <div class="tree-line"><span class="tree-indent">│</span></div>
+    <div class="tree-line"><span class="tree-indent">│</span><span class="tree-dir">services/</span></div>
+    <div class="tree-line"><span class="tree-indent">│  ├─</span><span class="tree-dir">astra-core/</span><span class="tree-comment">// LLM orchestration + personality engine</span></div>
+    <div class="tree-line"><span class="tree-indent">│  ├─</span><span class="tree-dir">emotion-engine/</span><span class="tree-comment">// Signal detection + layer processing</span></div>
+    <div class="tree-line"><span class="tree-indent">│  ├─</span><span class="tree-dir">canvas-renderer/</span><span class="tree-comment">// Generative art WebGL / Three.js</span></div>
+    <div class="tree-line"><span class="tree-indent">│  ├─</span><span class="tree-dir">archive-service/</span><span class="tree-comment">// Encrypted emotional history</span></div>
+    <div class="tree-line"><span class="tree-indent">│  ├─</span><span class="tree-dir">social-layer/</span><span class="tree-comment">// Anonymous sharing + resonance engine</span></div>
+    <div class="tree-line"><span class="tree-indent">│  ├─</span><span class="tree-dir">session-guardian/</span><span class="tree-comment">// Dependency prevention + limit enforcement</span></div>
+    <div class="tree-line"><span class="tree-indent">│  └─</span><span class="tree-dir">billing/</span><span class="tree-comment">// Freemium logic — no dark patterns</span></div>
+    <div class="tree-line"><span class="tree-indent">│</span></div>
+    <div class="tree-line"><span class="tree-indent">│</span><span class="tree-dir">packages/</span></div>
+    <div class="tree-line"><span class="tree-indent">│  ├─</span><span class="tree-dir">ui/</span><span class="tree-comment">// Shared component system</span></div>
+    <div class="tree-line"><span class="tree-indent">│  ├─</span><span class="tree-dir">emotion-types/</span><span class="tree-comment">// Shared emotion taxonomy</span></div>
+    <div class="tree-line"><span class="tree-indent">│  ├─</span><span class="tree-dir">ethical-rules/</span><span class="tree-comment">// Constraint engine — shared across all services</span></div>
+    <div class="tree-line"><span class="tree-indent">│  └─</span><span class="tree-dir">crypto/</span><span class="tree-comment">// Client-side encryption utilities</span></div>
+    <div class="tree-line"><span class="tree-indent">│</span></div>
+    <div class="tree-line"><span class="tree-indent">│</span><span class="tree-dir">infra/</span></div>
+    <div class="tree-line"><span class="tree-indent">│  ├─</span><span class="tree-dir">k8s/</span><span class="tree-comment">// Kubernetes manifests</span></div>
+    <div class="tree-line"><span class="tree-indent">│  ├─</span><span class="tree-dir">terraform/</span><span class="tree-comment">// Cloud infrastructure as code</span></div>
+    <div class="tree-line"><span class="tree-indent">│  └─</span><span class="tree-dir">monitoring/</span><span class="tree-comment">// Wellbeing metrics only — no engagement metrics</span></div>
+    <div class="tree-line"><span class="tree-indent">│</span></div>
+    <div class="tree-line"><span class="tree-indent">│</span><span class="tree-dir">docs/</span></div>
+    <div class="tree-line"><span class="tree-indent">│  ├─</span><span class="tree-file">ETHICAL_FRAMEWORK.md</span></div>
+    <div class="tree-line"><span class="tree-indent">│  ├─</span><span class="tree-file">ASTRA_PERSONALITY.md</span></div>
+    <div class="tree-line"><span class="tree-indent">│  ├─</span><span class="tree-file">DEPENDENCY_PREVENTION.md</span></div>
+    <div class="tree-line"><span class="tree-indent">│  └─</span><span class="tree-file">CLINICAL_BOUNDARIES.md</span></div>
+  </div>
+</section>
+
+<!-- ETHICS -->
+<section id="ethics">
+  <div class="section-eyebrow">Ethical AI Framework</div>
+  <h2 class="section-title">Ethics as <em>architecture</em>,<br>not afterthought.</h2>
+  <p class="section-body">Every constraint in this system is an ethical choice. The rules are embedded in code, not just policy documents.</p>
+
+  <div class="ethics-grid reveal">
+    <div class="ethics-cell header">Principle</div>
+    <div class="ethics-cell header">Implementation</div>
+    <div class="ethics-cell header">Status</div>
+
+    <div class="ethics-cell"><div class="ethics-label">No Diagnosis</div><div class="ethics-desc">Astra's prompts never classify or name clinical states. Terms like "anxiety" or "depression" are never applied to users.</div></div>
+    <div class="ethics-cell"><div class="ethics-desc">Output filter rejects diagnostic language. Third-party LLM outputs are post-processed before display.</div></div>
+    <div class="ethics-cell"><div class="ethics-status status-core">Core Rule</div></div>
+
+    <div class="ethics-cell"><div class="ethics-label">Anti-Dependency</div><div class="ethics-desc">The system actively works against over-reliance on itself, built into session logic.</div></div>
+    <div class="ethics-cell"><div class="ethics-desc">Hard session limits (45 min/day free, 90 min premium). Mandatory cooling periods. Break nudges after 30 min.</div></div>
+    <div class="ethics-cell"><div class="ethics-status status-prevent">Prevention</div></div>
+
+    <div class="ethics-cell"><div class="ethics-label">Privacy by Default</div><div class="ethics-desc">Emotional data is one of the most sensitive data classes in existence.</div></div>
+    <div class="ethics-cell"><div class="ethics-desc">End-to-end encryption. On-device processing where possible. Users own and can delete all data. No third-party data sales ever.</div></div>
+    <div class="ethics-cell"><div class="ethics-status status-core">Core Rule</div></div>
+
+    <div class="ethics-cell"><div class="ethics-label">No Moral Authority</div><div class="ethics-desc">Astra never tells users what is right or wrong about their emotions or choices.</div></div>
+    <div class="ethics-cell"><div class="ethics-desc">Language model constrained with value-neutral instruction tuning. Content review for directive language.</div></div>
+    <div class="ethics-cell"><div class="ethics-status status-design">Design Rule</div></div>
+
+    <div class="ethics-cell"><div class="ethics-label">Crisis Escalation</div><div class="ethics-desc">Some emotional states require human professional support. Astra must recognise and redirect.</div></div>
+    <div class="ethics-cell"><div class="ethics-desc">Signal detection for crisis language. Immediate, clear redirection to professional resources. No attempt to handle in-app.</div></div>
+    <div class="ethics-cell"><div class="ethics-status status-prevent">Prevention</div></div>
+
+    <div class="ethics-cell"><div class="ethics-label">Metric-Free Social</div><div class="ethics-desc">Quantified social validation is psychologically harmful at scale.</div></div>
+    <div class="ethics-cell"><div class="ethics-desc">No like counts. No follower counts. No engagement scores. "Resonated" is binary and private to the sender.</div></div>
+    <div class="ethics-cell"><div class="ethics-status status-design">Design Rule</div></div>
+  </div>
+</section>
+
+<!-- ROADMAP -->
+<section id="roadmap">
+  <div class="section-eyebrow">10-Year Growth Roadmap</div>
+  <h2 class="section-title">Growth without <em>addiction</em><br>mechanics.</h2>
+  <p class="section-body">Each phase deepens the emotional contract rather than expanding engagement metrics. The north star is always wellbeing, not retention.</p>
+
+  <div class="timeline reveal">
+    <div class="timeline-item">
+      <div class="timeline-year">Year 1 — Foundation</div>
+      <div class="timeline-title">Emotional Companion Core</div>
+      <div class="timeline-body">Launch web + mobile with core Reflection and Regulation layers. Establish ethical review board. Freemium model live. Astra personality v1 — text only with generative visual canvas.</div>
+    </div>
+    <div class="timeline-item">
+      <div class="timeline-year">Year 2 — Depth</div>
+      <div class="timeline-title">Reframing Layer + Emotional Archive</div>
+      <div class="timeline-body">Cognitive reframing prompts. Encrypted emotional history. Pattern visualisation. Anonymous social layer launches with resonance-only interaction model.</div>
+    </div>
+    <div class="timeline-item">
+      <div class="timeline-year">Year 3 — Intelligence</div>
+      <div class="timeline-title">Adaptive Personality + Growth Layer</div>
+      <div class="timeline-body">Astra adapts to individual communication styles. Long-term emotional evolution charts. Introduce "Deep Mode" for premium — extended contemplative sessions with richer generative space.</div>
+    </div>
+    <div class="timeline-item">
+      <div class="timeline-year">Years 4–5 — Ecosystem</div>
+      <div class="timeline-title">Professional Integration + Research Partnerships</div>
+      <div class="timeline-body">Optional therapist-linked mode (user-controlled data sharing). Anonymised research dataset (opt-in only) for mental health institutions. Developer API for ethical third-party integrations.</div>
+    </div>
+    <div class="timeline-item">
+      <div class="timeline-year">Years 6–8 — Multimodal</div>
+      <div class="timeline-title">Embodied Sensing + Spatial Computing</div>
+      <div class="timeline-body">Opt-in biometric integration (HRV, breath rate). AR/VR emotional space environments. Offline-first architecture for low-connectivity regions. Community guidelines evolved with user council.</div>
+    </div>
+    <div class="timeline-item">
+      <div class="timeline-year">Years 9–10 — Legacy</div>
+      <div class="timeline-title">Emotional Infrastructure at Scale</div>
+      <div class="timeline-body">Localised emotional intelligence — culturally-adapted Astra models. Collective Mood Map at global scale. Open-sourced ethical framework contributed to industry standards. Living Canvas as a reference model for ethical AI companionship.</div>
+    </div>
+  </div>
+</section>
+
+<!-- RISK -->
+<section id="risk">
+  <div class="section-eyebrow">Risk Mitigation Strategy</div>
+  <h2 class="section-title">Risks anticipated,<br><em>by design</em>.</h2>
+  <p class="section-body">The most dangerous risks for this platform are not technical — they are human and ethical. Each is treated as a first-class engineering and design concern.</p>
+
+  <table class="risk-table reveal">
+    <thead>
+      <tr>
+        <th>Risk</th>
+        <th>Category</th>
+        <th>Level</th>
+        <th>Mitigation</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td>User in acute mental health crisis uses platform instead of professional help</td>
+        <td>Clinical Boundary</td>
+        <td><span class="risk-level risk-high">High</span></td>
+        <td>Crisis language detection → hard redirect to emergency resources. Platform cannot be accessed during detected crisis without acknowledgement of professional resources.</td>
+      </tr>
+      <tr>
+        <td>Emotional data breach exposing sensitive personal information</td>
+        <td>Privacy</td>
+        <td><span class="risk-level risk-high">High</span></td>
+        <td>E2E encryption, on-device processing, zero-knowledge architecture where possible. Annual third-party security audit.</td>
+      </tr>
+      <tr>
+        <td>Parasocial attachment forming with Astra</td>
+        <td>Dependency</td>
+        <td><span class="risk-level risk-high">High</span></td>
+        <td>Session limits, break enforcement, explicit language that Astra is a tool. Astra regularly points users toward human connection.</td>
+      </tr>
+      <tr>
+        <td>Astra outputs inadvertently directive or diagnostic language</td>
+        <td>AI Safety</td>
+        <td><span class="risk-level risk-med">Med</span></td>
+        <td>Output post-processing filter, red-team adversarial testing quarterly, human review of edge case outputs, clear escalation paths.</td>
+      </tr>
+      <tr>
+        <td>Platform used for emotional manipulation of vulnerable users</td>
+        <td>Misuse</td>
+        <td><span class="risk-level risk-med">Med</span></td>
+        <td>No third-party access to emotional state data. Transparency about data use. Independent ethics board with veto power over product decisions.</td>
+      </tr>
+      <tr>
+        <td>Monetisation pressure leading to engagement-maximising features</td>
+        <td>Business Ethics</td>
+        <td><span class="risk-level risk-med">Med</span></td>
+        <td>Ethical charter embedded in founding documents. Board-level ethics committee. Feature proposals reviewed against ethical framework before development.</td>
+      </tr>
+      <tr>
+        <td>Cultural insensitivity in emotional framing or Astra's language</td>
+        <td>Cultural Safety</td>
+        <td><span class="risk-level risk-low">Low</span></td>
+        <td>Localisation review with cultural consultants. User-configurable emotional language preferences. Ongoing community feedback channels.</td>
+      </tr>
+    </tbody>
+  </table>
+</section>
+
+</main>
+
+<footer>
+  <div style="color: var(--accent); margin-bottom: 12px;">✦</div>
+  The Living Canvas · Platform Blueprint · Architecture Version 1.0<br>
+  <span style="opacity:0.5;">Designed for human emotional dignity · Not therapy · Not treatment · A companion space.</span>
+</footer>
+
+<script>
+// Scroll reveal
+const observer = new IntersectionObserver((entries) => {
+  entries.forEach(e => {
+    if (e.isIntersecting) {
+      e.target.classList.add('visible');
+    }
+  });
+}, { threshold: 0.1 });
+
+document.querySelectorAll('.reveal').forEach(el => observer.observe(el));
+</script>
+</body>
+</html>
